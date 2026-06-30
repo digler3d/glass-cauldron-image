@@ -45,7 +45,7 @@ RUN git clone --depth 1 --branch 4.1.0 https://github.com/colmap/colmap.git /opt
       -DCUDA_ENABLED=ON \
       -DCMAKE_CUDA_ARCHITECTURES="80;86;89" \
       -DCMAKE_INSTALL_PREFIX=/usr/local && \
-    ninja -C /opt/colmap-src/build && \
+    ninja -j 2 -C /opt/colmap-src/build && \
     ninja -C /opt/colmap-src/build install && \
     echo /usr/local/thirdparty > /etc/ld.so.conf.d/colmap.conf && \
     rm -f /usr/local/lib/libcolmap_*.a && \
