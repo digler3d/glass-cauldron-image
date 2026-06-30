@@ -21,7 +21,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # libopencv-dev) is required by COLMAP 4.x on 22.04. Do NOT add libimath-dev
 # (conflicts with libilmbase-dev that OpenImageIO pulls in).
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      git cmake ninja-build build-essential wget ca-certificates \
+      git cmake ninja-build build-essential wget ca-certificates python3-pip \
       libboost-program-options-dev libboost-graph-dev libboost-system-dev \
       libboost-filesystem-dev libboost-test-dev \
       libeigen3-dev libflann-dev libfreeimage-dev libmetis-dev \
@@ -30,6 +30,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libcurl4-openssl-dev liblz4-dev libopenblas-openmp-dev liblapack-dev \
       libopenimageio-dev openimageio-tools libopenexr-dev libqt5svg5-dev libopencv-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# ---- Upgrade CMake (REQUIRED) ----------------------------------------------
+# Ubuntu 22.04 ships CMake 3.22, but COLMAP's bundled FAISS needs >= 3.24.0
+# (its CMakeLists has cmake_minimum_required(3.24)). pip installs the newer
+# cmake to /usr/local/bin, which precedes /usr/bin on PATH so it shadows the
+# apt one. Without this the build aborts at configure ("CMake 3.24.0 required").
+RUN pip3 install --no-cache-dir "cmake>=3.28"
 
 # ---- Compile + install COLMAP 4.1.0 CLI (CUDA, SHARED libs) ----------------
 # BUILD_SHARED_LIBS=ON is REQUIRED (static build aborts "Camera model does not
